@@ -963,8 +963,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // [CẤU HÌNH NHẬN ĐIỀU ƯỚC]
   // ==========================================================================
   const RECEIVER_EMAIL = 'pvdat1505@gmail.com';
-  // Link Google Apps Script (tùy chọn: giúp gửi email 100% xuyên biên giới không bị nhà mạng Singapore chặn)
-  let GOOGLE_SCRIPT_URL = '';
+  // Link Google Apps Script chính chủ Google - Gửi email tức thì, không bị chặn bởi nhà mạng Singapore hay Safari
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgxJhuq1QBRiUP_N53l1jm4T1t8ObsTzo6ONFWKcu-HxesI7992a5dOJTiwzxiGjTU/exec';
 
   // Hiệu ứng pháo hoa sao băng & hộp chúc mừng khi điều ước đã gửi
   function showWishSuccess(wishText) {
