@@ -964,110 +964,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   const RECEIVER_EMAIL = 'pvdat1505@gmail.com';
 
-  // Cơ chế gửi ngầm bằng Form ẩn (Bypass 100% AdBlock, Brave Shields, Safari Private Relay & CORS)
-  function fallbackFormSubmit(wish) {
-    try {
-      let iframe = document.getElementById('formsubmit_backup_iframe');
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'formsubmit_backup_iframe';
-        iframe.name = 'formsubmit_backup_iframe';
-        iframe.style.display = 'none';
-        iframe.style.width = '0';
-        iframe.style.height = '0';
-        iframe.style.border = 'none';
-        document.body.appendChild(iframe);
-      }
+  // Hiệu ứng pháo hoa sao băng & hộp chúc mừng khi điều ước đã gửi
+  function showWishSuccess(wishText) {
+    if (typeof playHarpSweep === 'function') playHarpSweep();
+    if (wishInputBox) wishInputBox.style.display = 'none';
+    if (displayUserWish) displayUserWish.textContent = `"${wishText}"`;
+    if (wishSuccessBox) wishSuccessBox.style.display = 'block';
 
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = `https://formsubmit.co/${encodeURIComponent(RECEIVER_EMAIL)}`;
-      form.target = 'formsubmit_backup_iframe';
-      form.style.display = 'none';
-
-      const fields = {
-        _subject: '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️',
-        _template: 'table',
-        _captcha: 'false',
-        '✨ Nội dung điều ước': wish,
-        '⏰ Thời gian gửi': new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        '💌 Ghi chú': 'Vợ yêu vừa ước điều này dưới ánh trăng rằm!'
-      };
-
-      for (const [key, value] of Object.entries(fields)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => form.remove(), 3000);
-      console.log('Đã kích hoạt gửi qua kênh Form dự phòng ngầm thành công!');
-    } catch (e) {
-      console.warn('Lỗi form dự phòng:', e);
-    }
-  }
-
-  function sendWishToEmail(wish) {
-    if (!RECEIVER_EMAIL) {
-      console.log('Chưa cấu hình RECEIVER_EMAIL. Điều ước đã lưu vào máy:', wish);
-      return;
-    }
-
-    try {
-      fetch(`https://formsubmit.co/ajax/${encodeURIComponent(RECEIVER_EMAIL)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️',
-          _template: 'table',
-          _captcha: 'false',
-          "✨ Nội dung điều ước": wish,
-          "⏰ Thời gian gửi": new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-          "💌 Ghi chú": "Vợ yêu của bạn vừa ước điều ước này dưới ánh trăng rằm trên trang web!"
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log('Đã gửi điều ước về email pvdat1505@gmail.com thành công:', data);
-        if (data && data.success === 'false') {
-          fallbackFormSubmit(wish);
-        }
-      })
-      .catch(err => {
-        console.warn('Kết nối AJAX bị chặn (AdBlock/mạng quốc tế), chuyển sang gửi qua Form ẩn dự phòng:', err);
-        fallbackFormSubmit(wish);
-      });
-    } catch (e) {
-      console.warn('Không thể gửi AJAX, chuyển sang Form ẩn dự phòng:', e);
-      fallbackFormSubmit(wish);
-    }
-  }
-
-  function submitWish() {
-    const wishText = userWishInput.value.trim();
-    if (!wishText) {
-      alert('Vợ hãy nhập điều ước của mình vào nhé! ❤️');
-      userWishInput.focus();
-      return;
-    }
-
-    try {
-      localStorage.setItem('trung_thu_wish', wishText);
-    } catch (e) {}
-
-    // Tự động gửi điều ước về hòm thư Gmail của bạn
-    sendWishToEmail(wishText);
-
-    playHarpSweep();
-
-    const btnRect = submitWishBtn.getBoundingClientRect();
+    const btnRect = submitWishBtn ? submitWishBtn.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
     const btnX = btnRect.left + btnRect.width / 2;
     const btnY = btnRect.top;
 
@@ -1080,11 +984,101 @@ document.addEventListener('DOMContentLoaded', () => {
       }, i * 120);
     }
 
-    wishInputBox.style.display = 'none';
-    displayUserWish.textContent = `"${wishText}"`;
-    wishSuccessBox.style.display = 'block';
-
     createMiniHeartBurst(btnX, btnY, 25);
+  }
+
+  // Tự động kiểm tra nếu vừa được FormSubmit chuyển hướng về sau khi gửi thành công
+  if (window.location.search.includes('wish_sent=true')) {
+    const savedWish = localStorage.getItem('trung_thu_wish') || 'Mong chúng mình mãi luôn bình yên và hạnh phúc bên nhau! ❤️';
+    setTimeout(() => {
+      showWishSuccess(savedWish);
+      const section = document.getElementById('wishSection');
+      if (section) section.scrollIntoView({ behavior: 'smooth' });
+    }, 600);
+  }
+
+  async function submitWish() {
+    const wishText = userWishInput.value.trim();
+    if (!wishText) {
+      alert('Vợ hãy nhập điều ước của mình vào nhé! ❤️');
+      userWishInput.focus();
+      return;
+    }
+
+    // Hiển thị trạng thái đang gửi
+    submitWishBtn.disabled = true;
+    const originalBtnHTML = submitWishBtn.innerHTML;
+    submitWishBtn.innerHTML = '<span>Đang gửi điều ước...</span> <span class="send-icon">✨</span>';
+
+    try {
+      localStorage.setItem('trung_thu_wish', wishText);
+    } catch (e) {}
+
+    let sentSuccess = false;
+
+    // KÊNH 1: Gửi qua AJAX URLSearchParams (Simple Request - Safari, iOS, Android, Desktop đều hỗ trợ)
+    try {
+      const params = new URLSearchParams();
+      params.append('_subject', '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️');
+      params.append('_template', 'table');
+      params.append('_captcha', 'false');
+      params.append('✨ Nội dung điều ước', wishText);
+      params.append('⏰ Thời gian gửi', new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }));
+      params.append('💌 Ghi chú', 'Vợ yêu vừa ước điều này dưới ánh trăng rằm trên trang web!');
+
+      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(RECEIVER_EMAIL)}`, {
+        method: 'POST',
+        body: params,
+        headers: {
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        credentials: 'omit'
+      });
+
+      const data = await response.json();
+      console.log('Phản hồi từ máy chủ email:', data);
+      if (data && (data.success === 'true' || data.success === true)) {
+        sentSuccess = true;
+      }
+    } catch (err) {
+      console.warn('Lệnh gửi ngầm bị chặn (do Safari ITP / AdBlock), chuyển sang kênh gửi trực tiếp:', err);
+    }
+
+    // KÊNH 2: Nếu Safari hoặc AdBlock chặn lệnh gọi ngầm -> Gửi bằng Form chuẩn tự động chuyển hướng về lại web (Bảo đảm 100% không bao giờ trượt)
+    if (!sentSuccess) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `https://formsubmit.co/${encodeURIComponent(RECEIVER_EMAIL)}`;
+
+      const currentBaseUrl = window.location.href.split('?')[0].split('#')[0];
+      const fields = {
+        _subject: '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️',
+        _template: 'table',
+        _captcha: 'false',
+        _next: currentBaseUrl + '?wish_sent=true#wishSection',
+        '✨ Nội dung điều ước': wishText,
+        '⏰ Thời gian gửi': new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+        '💌 Ghi chú': 'Vợ yêu vừa ước điều này dưới ánh trăng rằm trên trang web!'
+      };
+
+      for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    }
+
+    // Nếu Kênh 1 gửi thành công -> Hiện ngay sao băng chúc mừng
+    showWishSuccess(wishText);
+    submitWishBtn.disabled = false;
+    submitWishBtn.innerHTML = originalBtnHTML;
   }
 
   submitWishBtn.addEventListener('click', submitWish);
