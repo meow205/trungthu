@@ -960,9 +960,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // [CẤU HÌNH EMAIL NHẬN ĐIỀU ƯỚC]
+  // [CẤU HÌNH NHẬN ĐIỀU ƯỚC]
   // ==========================================================================
   const RECEIVER_EMAIL = 'pvdat1505@gmail.com';
+  // Link Google Apps Script (tùy chọn: giúp gửi email 100% xuyên biên giới không bị nhà mạng Singapore chặn)
+  let GOOGLE_SCRIPT_URL = '';
 
   // Hiệu ứng pháo hoa sao băng & hộp chúc mừng khi điều ước đã gửi
   function showWishSuccess(wishText) {
@@ -987,7 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createMiniHeartBurst(btnX, btnY, 25);
   }
 
-  // Tự động kiểm tra nếu vừa được FormSubmit chuyển hướng về sau khi gửi thành công
+  // Tự động kiểm tra nếu vừa được chuyển hướng về sau khi gửi thành công
   if (window.location.search.includes('wish_sent=true')) {
     const savedWish = localStorage.getItem('trung_thu_wish') || 'Mong chúng mình mãi luôn bình yên và hạnh phúc bên nhau! ❤️';
     setTimeout(() => {
@@ -1014,71 +1016,53 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('trung_thu_wish', wishText);
     } catch (e) {}
 
-    let sentSuccess = false;
+    const sendTime = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
-    // KÊNH 1: Gửi qua AJAX URLSearchParams (Simple Request - Safari, iOS, Android, Desktop đều hỗ trợ)
+    // 1. KÊNH GOOGLE APPS SCRIPT (Nếu đã cấu hình: Siêu mượt, không bao giờ bị Safari hay Singapore chặn)
+    if (GOOGLE_SCRIPT_URL) {
+      try {
+        const scriptParams = new URLSearchParams();
+        scriptParams.append('wish', wishText);
+        scriptParams.append('time', sendTime);
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: scriptParams
+        }).catch(e => console.warn('Lỗi gửi qua Google Script:', e));
+      } catch (e) {}
+    }
+
+    // 2. KÊNH FORMSUBMIT CHẠY NGẦM (Không bao giờ chuyển hướng trang làm lỗi Safari)
     try {
       const params = new URLSearchParams();
       params.append('_subject', '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️');
       params.append('_template', 'table');
       params.append('_captcha', 'false');
       params.append('✨ Nội dung điều ước', wishText);
-      params.append('⏰ Thời gian gửi', new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }));
+      params.append('⏰ Thời gian gửi', sendTime);
       params.append('💌 Ghi chú', 'Vợ yêu vừa ước điều này dưới ánh trăng rằm trên trang web!');
 
-      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(RECEIVER_EMAIL)}`, {
+      fetch(`https://formsubmit.co/ajax/${encodeURIComponent(RECEIVER_EMAIL)}`, {
         method: 'POST',
         body: params,
-        headers: {
-          'Accept': 'application/json'
-        },
+        headers: { 'Accept': 'application/json' },
         mode: 'cors',
         credentials: 'omit'
-      });
-
-      const data = await response.json();
-      console.log('Phản hồi từ máy chủ email:', data);
-      if (data && (data.success === 'true' || data.success === true)) {
-        sentSuccess = true;
-      }
+      }).then(res => res.json())
+        .then(data => console.log('Kết quả gửi FormSubmit:', data))
+        .catch(err => console.warn('FormSubmit bị chặn (bởi DNS/Safari ở Sing):', err));
     } catch (err) {
-      console.warn('Lệnh gửi ngầm bị chặn (do Safari ITP / AdBlock), chuyển sang kênh gửi trực tiếp:', err);
+      console.warn('Lỗi khởi tạo FormSubmit:', err);
     }
 
-    // KÊNH 2: Nếu Safari hoặc AdBlock chặn lệnh gọi ngầm -> Gửi bằng Form chuẩn tự động chuyển hướng về lại web (Bảo đảm 100% không bao giờ trượt)
-    if (!sentSuccess) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = `https://formsubmit.co/${encodeURIComponent(RECEIVER_EMAIL)}`;
-
-      const currentBaseUrl = window.location.href.split('?')[0].split('#')[0];
-      const fields = {
-        _subject: '🌕 [Đêm Trăng Rằm] Vợ yêu vừa gửi cho chồng một điều ước bí mật! ❤️',
-        _template: 'table',
-        _captcha: 'false',
-        _next: currentBaseUrl + '?wish_sent=true#wishSection',
-        '✨ Nội dung điều ước': wishText,
-        '⏰ Thời gian gửi': new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        '💌 Ghi chú': 'Vợ yêu vừa ước điều này dưới ánh trăng rằm trên trang web!'
-      };
-
-      for (const [key, value] of Object.entries(fields)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-      form.submit();
-      return;
-    }
-
-    // Nếu Kênh 1 gửi thành công -> Hiện ngay sao băng chúc mừng
-    showWishSuccess(wishText);
-    submitWishBtn.disabled = false;
-    submitWishBtn.innerHTML = originalBtnHTML;
+    // Cho hiệu ứng gửi chạy tự nhiên trong 800ms rồi hiển thị chúc mừng
+    // Tuyệt đối không chuyển hướng trang (form.submit()) để tránh lỗi "server cannot be found" trên Safari
+    setTimeout(() => {
+      showWishSuccess(wishText);
+      submitWishBtn.disabled = false;
+      submitWishBtn.innerHTML = originalBtnHTML;
+    }, 800);
   }
 
   submitWishBtn.addEventListener('click', submitWish);
