@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <radialGradient id='bg6' cx='50%' cy='40%' r='70%'><stop offset='0%' stop-color='#1b1464'/><stop offset='100%' stop-color='#060317'/></radialGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg6)'/>
+      <circle cx='300' cy='170' r='90' fill='#ffffff' opacity='0.9'/>
+      <ellipse cx='300' cy='200' rx='40' ry='35' fill='#f5cd79'/>
+      <!-- Rabbit ears -->
+      <ellipse cx='285' cy='120' rx='8' ry='30' fill='#f5cd79' transform='rotate(-10 285 120)'/>
+      <ellipse cx='315' cy='120' rx='8' ry='30' fill='#f5cd79' transform='rotate(10 315 120)'/>
+      <text x='300' y='360' fill='#ffeaa7' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>🐇 Thỏ Ngọc Cung Quảng Hàn 🐇</text>
+    </svg>

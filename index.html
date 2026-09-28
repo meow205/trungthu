@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🌕 Chúc Mừng Trung Thu - Món Quà Dành Tặng Vợ Yêu ❤️</title>
+  
+  <!-- Google Fonts: Tiếng Việt chuẩn, bay bổng, lãng mạn và hiện đại -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Dancing+Script:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+  <!-- Thư viện Three.js r128 & OrbitControls để render mô hình cây 3D xoay 360 độ và lồng đèn bay -->
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+      document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>');
+    }
+  </script>
+
+  <link rel="stylesheet" href="style.css?v=20260928">
+
+  <script>
+    // Hàm mở quà định nghĩa ngay lập tức để nút bấm hoạt động 100% không độ trễ
+    window.openGift = function(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var ws = document.getElementById('welcomeScreen');
+      if (ws) {
+        ws.classList.add('hidden');
+        setTimeout(function() { ws.style.display = 'none'; }, 850);
+      }
+      var mw = document.getElementById('mainWrapper');
+      if (mw) {
+        mw.classList.add('visible');
+      }
+      setTimeout(function() {
+        var els = document.querySelectorAll('.reveal-on-scroll');
+        for (var i = 0; i < els.length; i++) {
+          if (els[i].getBoundingClientRect().top < window.innerHeight * 1.4) {
+            els[i].classList.add('active');
+          }
+        }
+        if (typeof checkScrollReveal === 'function') checkScrollReveal();
+      }, 150);
+
+      try { if (typeof startMusic === 'function') startMusic(); } catch(err) {}
+    };
+  </script>
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- THANH TIẾN TRÌNH CUỘN TRANG (SCROLL PROGRESS) -->
+  <!-- ========================================== -->
+  <div class="scroll-progress-line" id="scrollProgressLine"></div>
+
+  <!-- ========================================== -->
+  <!-- CANVAS BẦU TRỜI: SAO, ĐÈN LỒNG, HOA ĐĂNG, ĐOM ĐÓM -->
+  <!-- ========================================== -->
+  <canvas id="skyCanvas"></canvas>
+
+  <!-- ========================================== -->
+  <!-- NÚT BẬT / TẮT NHẠC NỀN GÓC PHẢI MÀN HÌNH -->
+  <!-- ========================================== -->
+  <div class="music-control" id="musicControl" title="Bật / Tắt nhạc">
+    <div class="music-icon" id="musicIcon">🎵</div>
+    <div class="music-wave" id="musicWave">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- [TÙY CHỈNH NHẠC]: Đặt file bài hát bạn muốn vào cùng thư mục và đặt tên là music.mp3 -->
+  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
+  <!-- ========================================== -->
+  <!-- THỎ NGỌC ĐỒNG HÀNH (MASCOT MINI INTERACTION) -->
+  <!-- ========================================== -->
+  <div class="rabbit-companion" id="rabbitCompanion" title="Chạm vào tớ để trò chuyện nè! 🐰">
+    <!-- Nhãn gợi ý chạm vào em trên đầu Thỏ Ngọc -->
+    <div class="rabbit-hint-tag" id="rabbitHintTag">Chạm vào em ✨</div>
+    <div class="rabbit-cloud">☁️</div>
+    <div class="rabbit-body">
+      <div class="rabbit-ears">
+        <span class="ear left"></span>
+        <span class="ear right"></span>
+      </div>
+      <div class="rabbit-face">
+        <span class="rabbit-eye left"></span>
+        <span class="rabbit-eye right"></span>
+        <span class="rabbit-blush left"></span>
+        <span class="rabbit-blush right"></span>
+        <span class="rabbit-nose"></span>
+      </div>
+      <div class="rabbit-hand">🥮</div>
+    </div>
+    <!-- Bong bóng thoại -->
+    <div class="rabbit-speech-bubble" id="rabbitSpeechBubble">
+      <p id="rabbitSpeechText">Thỏ Ngọc chúc vợ yêu một mùa Trung Thu thật ngọt ngào nha! 🌸</p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MÀN HÌNH MỞ ĐẦU (WELCOME SCREEN NÂNG CẤP)  -->
+  <!-- ========================================== -->
+  <div class="welcome-screen" id="welcomeScreen">
+    
+    <!-- ĐÈN LỒNG TREO TƯƠNG TÁC HAI BÊN -->
+    <div class="hanging-lanterns-container">
+      <div class="hanging-lantern hl-1" data-wish="Chúc cô gái nhỏ của chồng luôn nở nụ cười rạng rỡ nhất! 🌸">
+        <div class="lantern-string"></div>
+        <div class="lantern-light">🏮</div>
+      </div>
+      <div class="hanging-lantern hl-2" data-wish="Mong cho mọi ước mơ của vợ đều thành hiện thực rực rỡ! ✨">
+        <div class="lantern-string"></div>
+        <div class="lantern-light">🏮</div>
+      </div>
+    </div>
+
+    <!-- MẶT TRĂNG TƯƠNG TÁC: CHẠM VÀO SÁNG RỰC & PHUN TIM -->
+    <div class="welcome-moon-container" id="welcomeMoonContainer" title="Chạm vào mặt trăng để nhận phước lành đêm rằm!">
+      <div class="welcome-moon" id="welcomeMoon">
+        <div class="moon-texture"></div>
+        <div class="moon-rabbit-silhouette"></div>
+        <div class="moon-tap-ripple" id="moonTapRipple"></div>
+      </div>
+      <div class="moon-glow-ambient"></div>
+    </div>
+
+    <div class="welcome-content">
+      <div class="festive-badge">✨ Đêm Rằm Tháng Tám Diệu Kỳ ✨</div>
+      <h1 class="welcome-title">🌕 HAPPY MID-AUTUMN FESTIVAL 🌕</h1>
+      
+      <!-- [TÙY CHỈNH LỜI NHẮN MỞ ĐẦU] -->
+      <p class="welcome-subtitle">
+        "Trung Thu này, chồng không cần gì nhiều...<br>
+        chỉ cần có vợ ở bên ❤️"
+      </p>
+
+      <button class="btn-open-gift" id="openGiftBtn" onclick="openGift(event)" type="button">
+        <span class="btn-sparkle" style="pointer-events:none;">✨</span>
+        <span class="btn-text" style="pointer-events:none;">Mở món quà</span>
+        <span class="btn-sparkle" style="pointer-events:none;">✨</span>
+      </button>
+      <p class="tap-hint" onclick="openGift(event)" style="cursor: pointer;">Chạm vào để bước vào đêm trăng của chúng mình</p>
+    </div>
+
+    <!-- Mây bay trang trí -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- GIAO DIỆN CHÍNH SAU KHI MỞ QUÀ            -->
+  <!-- ========================================== -->
+  <main class="main-wrapper" id="mainWrapper">
+
+    <!-- BẦU TRỜ VÀ MẶT TRĂNG CỐ ĐỊNH PHÍA TRÊN -->
+    <div class="fixed-sky-elements">
+      <div class="main-moon" id="mainMoon" title="Mặt trăng rằm tháng 8">
+        <div class="moon-body">
+          <div class="moon-texture"></div>
+          <div class="moon-rabbit-silhouette"></div>
+        </div>
+        <div class="moon-halo"></div>
+      </div>
+      <!-- Lồng đèn trôi phía xa -->
+      <div class="floating-ambient-lantern l1">🏮</div>
+      <div class="floating-ambient-lantern l2">🏮</div>
+      <div class="floating-ambient-lantern l3">🏮</div>
+    </div>
+
+    <!-- GỢI Ý CUỘN TRANG LƯỚT XUỐNG DƯỚI -->
+    <div class="scroll-down-hint" id="scrollDownHint">
+      <div class="scroll-mouse-icon">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span class="scroll-hint-text">Lướt xuống để cùng chồng ngắm trăng ✨</span>
+      <span class="scroll-chevron">⌄</span>
+    </div>
+
+    <div class="container">
+
+      <!-- ========================================== -->
+      <!-- PHẦN 1: LỜI CHÚC TRUNG THU                 -->
+      <!-- ========================================== -->
+      <section class="section section-wishes reveal-on-scroll">
+        <div class="glass-card letter-card">
+          <div class="card-ornament top-left">🌸</div>
+          <div class="card-ornament top-right">🌸</div>
+          
+          <!-- [TÙY CHỈNH TÊN NGƯỜI YÊU] -->
+          <h2 class="section-title romantic-title">
+            <span class="title-icon">🌙</span>
+            Gửi vợ yêu của chồng
+          </h2>
+          
+          <div class="letter-content">
+            <!-- [TÙY CHỈNH LỜI CHÚC] -->
+            <p class="paragraph">
+              Trung Thu này, chồng chỉ muốn gửi đến vợ những điều dịu dàng nhất.
+              Mong cho cô gái nhỏ của chồng luôn vui vẻ, luôn được yêu thương
+              và mỗi ngày đều có thật nhiều lý do để mỉm cười.
+            </p>
+            <p class="paragraph highlight-quote">
+              "Nếu mặt trăng có thể soi sáng cả bầu trời,<br>
+              thì vợ chính là người làm những ngày bình thường của chồng trở nên đặc biệt."
+            </p>
+            <p class="paragraph">
+              Chúc vợ một mùa Trung Thu thật ấm áp.<br>
+              Và mong rằng những mùa Trung Thu sau,<br>
+              người cùng chồng ngắm trăng vẫn luôn là vợ. ❤️
+            </p>
+          </div>
+
+          <div class="signature-tag">
+            <span>Yêu vợ nhiều hơn mỗi ngày</span>
+            <span class="heart-pulse">❤️</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- PHẦN 2: MÓN QUÀ NHỎ DÀNH CHO VỢ            -->
+      <!-- ========================================== -->
+      <section class="section section-gifts reveal-on-scroll">
+        <div class="section-header-box">
+          <h2 class="section-heading">✨ Ba Món Quà Nhỏ Dành Cho Vợ ✨</h2>
+          <p class="section-subheading">Chồng gom lại từ ánh trăng, ngọn lửa ấm và vị ngọt ngào</p>
+        </div>
+
+        <div class="gifts-grid">
+          <!-- Món quà 1: Ánh trăng -->
+          <div class="gift-card" data-tilt>
+            <div class="gift-icon-wrapper moon-icon-bg">
+              <span class="gift-emoji">🌕</span>
+            </div>
+            <h3 class="gift-title">Một chút ánh trăng</h3>
+            <p class="gift-desc">
+              "Nếu có thể, chồng muốn gom hết ánh trăng đêm nay để dành tặng vợ."
+            </p>
+          </div>
+
+          <!-- Món quà 2: Đèn lồng -->
+          <div class="gift-card" data-tilt>
+            <div class="gift-icon-wrapper lantern-icon-bg">
+              <span class="gift-emoji">🏮</span>
+            </div>
+            <h3 class="gift-title">Một chiếc đèn lồng</h3>
+            <p class="gift-desc">
+              "Để soi sáng những ngày vợ cảm thấy mệt mỏi."
+            </p>
+          </div>
+
+          <!-- Món quà 3: Bánh Trung Thu -->
+          <div class="gift-card" data-tilt>
+            <div class="gift-icon-wrapper cake-icon-bg">
+              <span class="gift-emoji">🥮</span>
+            </div>
+            <h3 class="gift-title">Một chiếc bánh Trung Thu</h3>
+            <p class="gift-desc">
+              "Ngọt ngào như những khoảnh khắc chồng được ở bên vợ."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- [HOẠT ĐỘNG 3D]: CÂY THẦN TIÊN & ĐÈN LỒNG 3D -->
+      <!-- ========================================== -->
+      <section class="section section-3d-tree reveal-on-scroll">
+        <div class="glass-card tree-3d-card">
+          <div class="game-badge">🌸 Thế Giới Kỳ Ảo 🌸</div>
+          <h2 class="section-heading">Cây Thần Tiên & Đảo Đèn Lồng </h2>
+
+          <div class="tree-3d-viewport" id="tree3DViewport">
+            <!-- Canvas 3D Three.js sẽ được nhúng vào đây -->
+            <div class="tree-3d-controls-overlay">
+              <button class="btn-reset-view" id="reset3DViewBtn" type="button" title="Đặt lại góc nhìn">
+                ↺ Đặt lại góc
+              </button>
+            </div>
+
+            <!-- Chỉ số đèn lồng đã khám phá -->
+            <div class="lantern-click-counter" id="lanternClickCounter">
+              Đèn lồng đã mở: <span id="litLanternCount">0</span>/8 🏮
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- PHẦN 3: KHOẢNH KHẮC CỦA CHÚNG MÌNH (POLAROID 3D FLIP)-->
+      <!-- ========================================== -->
+      <section class="section section-moments reveal-on-scroll">
+        <div class="section-header-box">
+          <h2 class="section-heading">📷 Khoảnh Khắc Của Chúng Mình</h2>
+          <p class="section-subheading">Chạm vào từng tấm ảnh để lật mặt sau đọc nhật ký bí mật nhé!</p>
+        </div>
+
+        <div class="polaroid-gallery">
+          <!-- ẢNH 1: Lật 3D xem mặt sau -->
+          <div class="polaroid-item p-rotate-neg1" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image1.jpg" alt="Khoảnh khắc 1" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">Ngày mình gặp nhau ❤️</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">❤️ MEMORY #1</div>
+                <p class="back-diary-text">
+                  "Ngày đầu tiên gặp vợ, tim chồng đã lỡ một nhịp. Ánh mắt và nụ cười rạng rỡ của vợ làm bừng sáng cả ngày hôm ấy..."
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ẢNH 2 -->
+          <div class="polaroid-item p-rotate-pos1" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image2.jpg" alt="Khoảnh khắc 2" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">Khoảnh khắc chồng nhớ nhất</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">🏮 MEMORY #2</div>
+                <p class="back-diary-text">
+                  "Cùng vợ dạo bước dưới ánh đèn lồng lung linh, chồng chỉ ước thời gian ngừng trôi để được ngắm vợ thật lâu..."
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ẢNH 3 -->
+          <div class="polaroid-item p-rotate-neg2" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image3.jpg" alt="Khoảnh khắc 3" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">Vợ lúc nào cũng đáng yêu</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">🌸 MEMORY #3</div>
+                <p class="back-diary-text">
+                  "Dù là lúc vợ cười tít mắt hay lúc vợ chu mỏ giận dỗi, với chồng vợ luôn là cô gái đáng yêu nhất quả đất!"
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ẢNH 4 -->
+          <div class="polaroid-item p-rotate-pos2" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image4.jpg" alt="Khoảnh khắc 4" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">Chúng ta</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">🌟 MEMORY #4</div>
+                <p class="back-diary-text">
+                  "Bình yên chẳng ở đâu xa xôi, bình yên là mỗi buổi tối được nghe giọng nói dịu dàng của vợ..."
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ẢNH 5 -->
+          <div class="polaroid-item p-rotate-neg3" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image5.jpg" alt="Khoảnh khắc 5" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">Đi cùng nhau nhé</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">💫 MEMORY #5</div>
+                <p class="back-diary-text">
+                  "Dù chặng đường phía trước có ra sao, chồng vẫn muốn được cùng vợ nắm tay đi qua thật nhiều mùa trăng nữa."
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ẢNH 6 -->
+          <div class="polaroid-item p-rotate-pos3" data-flip>
+            <div class="washi-tape"></div>
+            <div class="polaroid-flipper">
+              <div class="polaroid-front">
+                <div class="polaroid-img-box">
+                  <img src="images/image6.jpg" alt="Khoảnh khắc 6" loading="lazy" class="gallery-photo">
+                </div>
+                <p class="polaroid-caption">To be continued...</p>
+                <span class="flip-hint">↺ Chạm để lật</span>
+              </div>
+              <div class="polaroid-back">
+                <div class="back-diary-stamp">♾️ MEMORY #6</div>
+                <p class="back-diary-text">
+                  "Và câu chuyện tình yêu của chúng mình sẽ còn viết tiếp những trang tuyệt đẹp nhất... Yêu vợ! ❤️"
+                </p>
+                <div class="back-diary-date">Nhật ký tình yêu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- PHẦN 4: BỨC THƯ TÌNH TƯƠNG TÁC (ENVELOPE)  -->
+      <!-- ========================================== -->
+      <section class="section section-envelope reveal-on-scroll">
+        <div class="section-header-box">
+          <h2 class="section-heading">💌 Bức Thư Tình Gửi Vợ Yêu</h2>
+          <p class="section-subheading">Có những điều chồng chỉ muốn nhắn gửi riêng đến vợ ❤️</p>
+        </div>
+
+        <div class="interactive-envelope-container">
+          <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope" id="envelope">
+              <div class="envelope-flap"></div>
+              
+              <div class="wax-seal" id="waxSeal">
+                <span class="seal-icon">❤️</span>
+              </div>
+
+              <div class="envelope-label">
+                <span>💌 Bức thư chồng gửi vợ...</span>
+                <small>(Chạm vào phong thư để mở nhé)</small>
+              </div>
+
+              <div class="letter-paper" id="letterPaper">
+                <div class="letter-header">
+                  <span class="letter-date">Đêm Trăng Rằm Trung Thu ❤️</span>
+                </div>
+                
+                <div class="typewriter-body" id="typewriterBody"></div>
+
+                <div class="letter-footer" id="letterFooter" style="display: none;">
+                  <p class="letter-sign">— Chồng yêu của vợ ❤️</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-secondary" id="reopenLetterBtn" style="display: none;">
+            📜 Đọc lại bức thư
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- [HOẠT ĐỘNG MỚI 3]: MÁY ĐO ĐỘ NGỌT NGÀO & NẠP TIM -->
+      <!-- ========================================== -->
+      <section class="section section-love-meter reveal-on-scroll">
+        <div class="glass-card love-meter-card">
+          <div class="game-badge">💖 Nạp Năng Lượng Yêu Thương 💖</div>
+          <h2 class="section-heading">Thanh Đo Độ Ngọt Ngào</h2>
+          <p class="section-subheading">Chạm liên tục vào trái tim ma thuật để nạp đầy 100% tình yêu nhé!</p>
+
+          <div class="meter-content">
+            <div class="crystal-heart-btn" id="crystalHeartBtn" title="Chạm liên tục vào đây!">
+              <div class="heart-pulse-glow"></div>
+              <span class="heart-emoji-big">💖</span>
+              <span class="tap-counter-badge" id="tapCounterBadge">+0</span>
+            </div>
+
+            <!-- Thanh tiến trình nạp tim -->
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="loveProgressBar" style="width: 15%;"></div>
+              <span class="progress-percent" id="loveProgressText">15% Ngọt ngào</span>
+            </div>
+
+            <p class="love-meter-status" id="loveMeterStatus">
+              Đang chờ vợ yêu nạp năng lượng... ✨
+            </p>
+
+            <!-- Hộp quà bùng nổ khi đạt 100% -->
+            <div class="super-love-banner" id="superLoveBanner" style="display: none;">
+              <h3>🎉 NĂNG LƯỢNG TÌNH YÊU ĐÃ ĐẠT 3000%! 🎉</h3>
+              <p>Danh hiệu: "Cặp đôi ngọt ngào và hạnh phúc nhất vũ trụ đêm trăng rằm!" 🌕💖✨</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- PHẦN 5: HIỆU ỨNG ĐẶC BIỆT (ƯỚC NGUYỆN DƯỚI TRĂNG) -->
+      <!-- ========================================== -->
+      <section class="section section-wish reveal-on-scroll">
+        <div class="glass-card wish-card text-center">
+          <div class="moon-wish-badge">🌟 Khoảnh Khắc Diệu Kỳ 🌟</div>
+          
+          <h2 class="wish-title">Dưới Vòm Trời Đầy Sao</h2>
+          <p class="wish-intro">
+            Tương truyền rằng trong đêm Trung Thu, khi mặt trăng tròn và sáng nhất,<br>
+            những điều ước chân thành gửi gắm lên trời sao đều sẽ thành hiện thực.
+          </p>
+
+          <button class="btn-wish-moon" id="triggerWishBtn">
+            <span class="btn-icon">🌕</span>
+            <span>Ước một điều đi...</span>
+          </button>
+
+          <div class="wish-input-box" id="wishInputBox" style="display: none;">
+            <div class="wish-prompt">
+              <h3>✨ Điều ước của vợ là gì? ✨</h3>
+              <p>Hãy viết điều vợ mong muốn nhất vào đây nhé...</p>
+            </div>
+            
+            <div class="input-group">
+              <input type="text" id="userWishInput" placeholder="Ví dụ: Mong hai vợ chồng luôn bình yên và yêu nhau mãi..." maxlength="200" autocomplete="off">
+              <button id="submitWishBtn" class="btn-send-wish">
+                <span>Gửi điều ước</span>
+                <span class="send-icon">🚀</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="wish-success-box" id="wishSuccessBox" style="display: none;">
+            <div class="shooting-star-icon">💫</div>
+            <p class="success-user-wish" id="displayUserWish"></p>
+            <h3 class="success-promise">
+              "Chồng sẽ cố biến điều ước này thành sự thật cho vợ nhé. ❤️"
+            </h3>
+            <p class="promise-sub">Điều ước đã được gửi lên dải ngân hà rồi nhé!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- PHẦN 6: LỜI HỨA VĨNH CỬU & NÚT CHỒNG YÊU VỢ -->
+      <!-- ========================================== -->
+      <section class="section section-ending reveal-on-scroll">
+        <div class="ending-card">
+          <div class="moon-phase-art">🌕 ✨ 🌙</div>
+          
+          <blockquote class="ending-quote">
+            "🌕 Trăng có thể khuyết rồi tròn,<br>
+            nhưng tình cảm chồng dành cho vợ<br>
+            chỉ có lớn hơn chứ không nhỏ đi. ❤️"
+          </blockquote>
+
+          <h3 class="ending-sub">Happy Mid-Autumn Festival, my love 🏮🥮🌙</h3>
+
+          <div class="love-action-container">
+            <button class="btn-love-you" id="loveYouBtn">
+              <span class="heart-icon-btn">❤️</span>
+              <span class="love-btn-text">Chồng yêu vợ</span>
+              <span class="heart-icon-btn">❤️</span>
+            </button>
+            <p class="love-btn-hint">Nhấp vào đây để nhận cơn mưa tình yêu nhé!</p>
+          </div>
+
+          <div class="love-confession-modal" id="loveModal">
+            <div class="love-modal-content">
+              <div class="modal-big-heart">💖</div>
+              <h2>Chồng yêu vợ rất nhiều ❤️</h2>
+              <p>Cảm ơn vợ đã là mùa trăng đẹp nhất trong cuộc đời chồng!</p>
+              <button class="btn-close-modal" id="closeModalBtn">Dạ, vợ biết rồi 🥰</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- POPUP CA DAO & TRANH ẢNH KHI BẤM ĐÈN LỒNG 3D -->
+      <!-- ========================================== -->
+      <!-- FOOTER NHỎ CUỐI TRANG -->
+      <footer class="site-footer">
+        <p>Món quà được tạo ra bằng tất cả tình cảm dành riêng cho vợ 🌕🏮❤️</p>
+        <p class="copyright-note">Mid-Autumn Love Story</p>
+      </footer>
+
+    </div><!-- /container -->
+  </main>
+
+  <!-- ========================================== -->
+  <!-- POPUP CA DAO & TRANH ẢNH KHI BẤM ĐÈN LỒNG 3D (ĐẶT NGOÀI MAIN ĐỂ FIXED VIEWPORT CHUẨN) -->
+  <!-- ========================================== -->
+  <div class="lantern-modal" id="lanternModal">
+    <div class="lantern-modal-backdrop" id="lanternModalBackdrop"></div>
+    <div class="lantern-modal-content">
+      <button class="btn-close-lantern-modal" id="closeLanternModalBtn" type="button" title="Đóng">✕</button>
+      
+      <div class="lantern-modal-header">
+        <span class="modal-lantern-badge" id="modalLanternBadge">🏮 ĐÈN LỒNG KÝ ỨC #1</span>
+        <h3 class="modal-lantern-title" id="modalLanternTitle">Đêm Rước Đèn Ông Sao</h3>
+      </div>
+
+      <div class="modal-lantern-img-box">
+        <img src="images/lantern_art1.jpg" alt="Tranh Trung Thu" id="modalLanternImg" class="modal-art-photo">
+      </div>
+
+      <div class="modal-poem-box">
+        <div class="poem-quote-mark">“</div>
+        <p class="modal-poem-text" id="modalPoemText">
+          Tết Trung Thu rước đèn đi chơi,<br>
+          Em rước đèn đi khắp phố phường.<br>
+          Lòng vui sướng với đèn trong tay,<br>
+          Em múa ca trong ánh trăng rằm.
+        </p>
+        <div class="poem-quote-mark end">”</div>
+      </div>
+
+      <div class="modal-whisper-box">
+        <span class="whisper-label">💌 Lời thì thầm của chồng:</span>
+        <p class="modal-whisper-text" id="modalWhisperText">
+          Trung Thu này, niềm vui lớn nhất của chồng là được nắm tay vợ đi qua phố đèn hoa rực rỡ.
+        </p>
+      </div>
+
+      <button class="btn-lantern-next" id="nextLanternBtn" type="button">
+        ✨ Tiếp tục khám phá đèn khác
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT THUẦN -->
+  <script src="script.js?v=20260928"></script>
+</body>
+</html>

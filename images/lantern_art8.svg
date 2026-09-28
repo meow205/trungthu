@@ -1,0 +1,14 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <radialGradient id='bg8' cx='50%' cy='30%' r='70%'><stop offset='0%' stop-color='#4834d4'/><stop offset='100%' stop-color='#130f40'/></radialGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg8)'/>
+      <circle cx='300' cy='140' r='60' fill='#ffbe76'/>
+      <!-- Two silhouettes under moon -->
+      <circle cx='270' cy='260' r='18' fill='#000'/>
+      <circle cx='330' cy='265' r='16' fill='#000'/>
+      <path d='M240,360 C250,290 260,280 270,280 C280,280 290,300 300,360 Z' fill='#000'/>
+      <path d='M305,360 C315,300 325,285 330,285 C340,285 350,305 360,360 Z' fill='#000'/>
+      <text x='300' y='220' fill='#ff7979' font-size='28' text-anchor='middle'>❤️</text>
+      <text x='300' y='380' fill='#ffffff' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>💑 Trọn Vẹn Duyên Nồng Đêm Trăng 💑</text>
+    </svg>

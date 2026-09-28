@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <radialGradient id='bg5' cx='50%' cy='50%' r='70%'><stop offset='0%' stop-color='#4a154b'/><stop offset='100%' stop-color='#100312'/></radialGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg5)'/>
+      <!-- Hexagonal rotating lantern -->
+      <polygon points='230,120 370,120 400,240 200,240' fill='#e056fd' opacity='0.75' stroke='#f9ca24' stroke-width='4'/>
+      <polygon points='200,240 400,240 370,270 230,270' fill='#be2edd'/>
+      <line x1='300' y1='60' x2='300' y2='120' stroke='#f9ca24' stroke-width='4'/>
+      <circle cx='300' cy='180' r='30' fill='#fff' opacity='0.8'/>
+      <text x='300' y='360' fill='#f1c40f' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>🏮 Đèn Kéo Quân Lung Linh 🏮</text>
+    </svg>

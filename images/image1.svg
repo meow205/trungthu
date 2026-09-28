@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' width='100%' height='100%'>
+      <defs>
+        <radialGradient id='sky1' cx='50%' cy='30%' r='70%'>
+          <stop offset='0%' stop-color='#2b1055'/>
+          <stop offset='50%' stop-color='#150734'/>
+          <stop offset='100%' stop-color='#0f051d'/>
+        </radialGradient>
+        <radialGradient id='moonGlow1' cx='50%' cy='50%' r='50%'>
+          <stop offset='0%' stop-color='#fff9d2'/>
+          <stop offset='60%' stop-color='#ffd56b'/>
+          <stop offset='100%' stop-color='transparent'/>
+        </radialGradient>
+      </defs>
+      <rect width='600' height='600' fill='url(#sky1)'/>
+      <!-- Stars -->
+      <circle cx='100' cy='120' r='2' fill='#fff' opacity='0.8'/>
+      <circle cx='480' cy='90' r='1.5' fill='#fff' opacity='0.9'/>
+      <circle cx='250' cy='70' r='2.5' fill='#ffeaa7' opacity='0.85'/>
+      <circle cx='520' cy='280' r='2' fill='#fff' opacity='0.7'/>
+      <!-- Moon -->
+      <circle cx='300' cy='220' r='120' fill='url(#moonGlow1)' opacity='0.3'/>
+      <circle cx='300' cy='220' r='75' fill='#fffbe0'/>
+      <!-- Couple silhouette -->
+      <path d='M200,600 C240,480 270,450 285,450 C295,450 305,475 315,480 C325,475 335,450 345,450 C360,450 390,480 430,600 Z' fill='#090314'/>
+      <circle cx='285' cy='420' r='22' fill='#090314'/>
+      <circle cx='345' cy='422' r='20' fill='#090314'/>
+      <!-- Little heart -->
+      <path d='M315,385 C315,375 305,370 298,377 C290,370 280,375 280,385 C280,398 315,415 315,415 C315,415 350,398 350,385 C350,375 340,370 332,377 C325,370 315,375 315,385 Z' fill='#ff6b81' transform='scale(0.5) translate(315, 380)'/>
+      <text x='300' y='550' fill='#f1f2f6' font-size='22' font-family='sans-serif' text-anchor='middle' opacity='0.8'>✨ Ngày Đầu Gặp Gỡ ✨</text>
+    </svg>

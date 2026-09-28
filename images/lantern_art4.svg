@@ -1,0 +1,14 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <radialGradient id='bg4' cx='50%' cy='50%' r='70%'><stop offset='0%' stop-color='#0f2027'/><stop offset='100%' stop-color='#02070a'/></radialGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg4)'/>
+      <circle cx='300' cy='160' r='90' fill='#f9ca24' opacity='0.85'/>
+      <!-- Banyan tree on moon -->
+      <path d='M285,240 Q290,170 300,140 Q315,170 315,240 Z' fill='#1e272e'/>
+      <circle cx='300' cy='120' r='55' fill='#1e272e'/>
+      <!-- Cuoi silhouette -->
+      <circle cx='270' cy='210' r='12' fill='#000'/>
+      <ellipse cx='272' cy='225' rx='10' ry='16' fill='#000'/>
+      <text x='300' y='360' fill='#f6e58d' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>🌳 Chú Cuội Ngồi Gốc Cây Đa 🌳</text>
+    </svg>

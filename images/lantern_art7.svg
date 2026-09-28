@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <linearGradient id='bg7' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='#0c2461'/><stop offset='60%' stop-color='#1e3799'/><stop offset='100%' stop-color='#0a3d62'/></linearGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg7)'/>
+      <circle cx='300' cy='120' r='50' fill='#f6e58d'/>
+      <!-- Water reflection -->
+      <path d='M0,250 Q300,220 600,250 L600,400 L0,400 Z' fill='#0c2461'/>
+      <ellipse cx='300' cy='310' rx='80' ry='12' fill='#f6e58d' opacity='0.3'/>
+      <ellipse cx='300' cy='340' rx='50' ry='8' fill='#f6e58d' opacity='0.2'/>
+      <text x='300' y='375' fill='#ffffff' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>🌊 Trăng Soi Đáy Nước Dịu Êm 🌊</text>
+    </svg>

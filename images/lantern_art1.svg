@@ -1,0 +1,13 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'>
+      <defs>
+        <radialGradient id='bg1' cx='50%' cy='40%' r='70%'><stop offset='0%' stop-color='#2b1055'/><stop offset='100%' stop-color='#0a0418'/></radialGradient>
+        <radialGradient id='starGlow' cx='50%' cy='50%' r='50%'><stop offset='0%' stop-color='#fff9d2'/><stop offset='100%' stop-color='transparent'/></radialGradient>
+      </defs>
+      <rect width='600' height='400' fill='url(#bg1)'/>
+      <circle cx='300' cy='180' r='140' fill='url(#starGlow)' opacity='0.4'/>
+      <!-- Star lantern (Đèn ông sao 5 cánh) -->
+      <polygon points='300,70 330,160 425,160 348,215 378,305 300,250 222,305 252,215 175,160 270,160' fill='#e84118' stroke='#fbc531' stroke-width='6'/>
+      <polygon points='300,105 320,170 385,170 333,208 353,270 300,232 247,270 267,208 215,170 280,170' fill='#fbc531' opacity='0.85'/>
+      <circle cx='300' cy='190' r='35' fill='#ffffff' opacity='0.9'/>
+      <text x='300' y='360' fill='#ffeaa7' font-size='22' font-family='sans-serif' text-anchor='middle' font-weight='bold'>🏮 Đêm Rước Đèn Ông Sao 🏮</text>
+    </svg>
